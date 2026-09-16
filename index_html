@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AR柔らかさ実験</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
+  <!-- MindAR -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px 12px;
+      margin: 4px;
+      background: white;
+      border: 2px solid black;
+      border-radius: 8px;
+    }
+
+    #statusPanel {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      z-index: 10;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 17px;
+    }
+
+    #conditionPanel {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 95%;
+      z-index: 10;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 現在の状態 -->
+  <div id="statusPanel">
+    <div>現在の変形状態</div>
+    <div id="status">変形なし</div>
+  </div>
+
+  <!-- 変形ボタン -->
+  <div id="conditionPanel">
+    <button id="noneButton">変形なし</button>
+    <button id="smallButton">小さな変形</button>
+    <button id="largeButton">大きな変形</button>
+    <button id="resetButton">元に戻す</button>
+  </div>
+
+  <!-- AR画面 -->
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <!-- カメラ -->
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- マーカーを認識した場所 -->
+    <a-entity mindar-image-target="targetIndex: 0">
+
+      <!-- マーカーの上に表示する球 -->
+      <a-sphere
+        id="ball"
+        position="0 0.5 0"
+        radius="0.3"
+        color="#5DADE2">
+      </a-sphere>
+
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const ball = document.getElementById("ball");
+    const status = document.getElementById("status");
+
+    // 球を変形させる関数
+    function deformBall(scaleValue) {
+      ball.setAttribute("animation__scale", {
+        property: "scale",
+        to: scaleValue,
+        dur: 500,
+        easing: "easeInOutQuad"
+      });
+    }
+
+    // 変形なし
+    document.getElementById("noneButton").addEventListener("click", function () {
+      deformBall("1 1 1");
+      status.textContent = "変形なし";
+    });
+
+    // 小さな変形
+    document.getElementById("smallButton").addEventListener("click", function () {
+      deformBall("1.15 0.8 1.15");
+      status.textContent = "小さな変形";
+    });
+
+    // 大きな変形
+    document.getElementById("largeButton").addEventListener("click", function () {
+      deformBall("1.3 0.6 1.3");
+      status.textContent = "大きな変形";
+    });
+
+    // 元の形に戻す
+    document.getElementById("resetButton").addEventListener("click", function () {
+      deformBall("1 1 1");
+      status.textContent = "変形なし";
+    });
+  </script>
+
+</body>
+</html>
